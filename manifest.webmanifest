@@ -1,0 +1,24 @@
+{
+  "name": "Scriba — Gestão de Estudos",
+  "short_name": "Scriba",
+  "description": "Cronograma, planejador de estudos e Pomodoro em um só lugar. Funciona offline.",
+  "lang": "pt-BR",
+  "id": "./",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#ffffff",
+  "theme_color": "#151515",
+  "categories": ["education", "productivity"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ],
+  "shortcuts": [
+    { "name": "Nova tarefa", "short_name": "Tarefa", "url": "./index.html#tasks", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Iniciar foco", "short_name": "Foco", "url": "./index.html#focus", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] }
+  ]
+}

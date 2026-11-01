@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <!-- Security: strict Content-Security-Policy (no inline scripts, no third-party code) and no referrer leaks -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; style-src-attr 'unsafe-inline'; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; manifest-src 'self'; media-src 'none'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <meta name="referrer" content="no-referrer">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Scriba — Gestão de Estudos</title>
+  <meta name="description" content="Scriba: cronograma, tarefas, planejador de estudos e timer Pomodoro em um só lugar.">
+  <meta name="color-scheme" content="light dark">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Scriba">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#151515" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230a0a0a'/%3E%3Ctext x='16' y='23.5' font-size='21' font-weight='900' text-anchor='middle' font-family='monospace' fill='%23fff'%3ES%3C/text%3E%3C/svg%3E">
+
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" media="print" id="webFonts">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="style.css">
+  <script src="boot.js"></script>
+  <script src="i18n.js" defer></script>
+  <script src="script.js" defer></script>
+</head>
+<body>
+
+  <a class="skip-link" href="#main" data-i18n="a11y.skip">Ir para o conteúdo</a>
+
+  <!-- ====================== ICON SPRITE (Feather-style, stroke icons) ====================== -->
+  <svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></symbol>
+    <symbol id="i-tasks" viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></symbol>
+    <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></symbol>
+    <symbol id="i-timer" viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M9 2h6"/></symbol>
+    <symbol id="i-database" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></symbol>
+    <symbol id="i-edit" viewBox="0 0 24 24"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></symbol>
+    <symbol id="i-upload" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></symbol>
+    <symbol id="i-reset" viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></symbol>
+    <symbol id="i-skip" viewBox="0 0 24 24"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></symbol>
+    <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></symbol>
+    <symbol id="i-zap" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></symbol>
+    <symbol id="i-sparkles" viewBox="0 0 24 24"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9z"/></symbol>
+    <symbol id="i-sunrise" viewBox="0 0 24 24"><path d="M17 18a5 5 0 0 0-10 0"/><line x1="12" y1="2" x2="12" y2="9"/><line x1="4.22" y1="10.22" x2="5.64" y2="11.64"/><line x1="1" y1="18" x2="3" y2="18"/><line x1="21" y1="18" x2="23" y2="18"/><line x1="18.36" y1="11.64" x2="19.78" y2="10.22"/><line x1="23" y1="22" x2="1" y2="22"/><polyline points="8 6 12 2 16 6"/></symbol>
+<symbol id="i-zoom" viewBox="0 0 24 24"><polyline points="4 9 4 4 9 4"/><polyline points="20 9 20 4 15 4"/><polyline points="4 15 4 20 9 20"/><polyline points="20 15 20 20 15 20"/></symbol>
+    <symbol id="i-layers" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></symbol>
+  </svg>
+
+  <!-- ====================== HEADER + NAVIGATION ====================== -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="#dashboard" aria-label="Scriba">
+        <span class="brand-badge">SCRIBA</span>
+        <span class="brand-tag" data-i18n="brand.tag">Gestão de Estudos</span>
+      </a>
+
+      <!-- Top tabs on desktop, bottom bar on phones (same element, restyled by CSS) -->
+      <nav class="nav" id="mainNav" data-i18n-aria="nav.label" aria-label="Seções">
+        <button type="button" class="tab" data-view="dashboard"><svg class="icon" aria-hidden="true"><use href="#i-grid"/></svg><span data-i18n="nav.dashboard">Painel</span></button>
+        <button type="button" class="tab" data-view="tasks"><svg class="icon" aria-hidden="true"><use href="#i-tasks"/></svg><span data-i18n="nav.tasks">Cronograma</span></button>
+        <button type="button" class="tab" data-view="planner"><svg class="icon" aria-hidden="true"><use href="#i-calendar"/></svg><span data-i18n="nav.planner">Planejador</span></button>
+        <button type="button" class="tab" data-view="focus"><svg class="icon" aria-hidden="true"><use href="#i-timer"/></svg><span data-i18n="nav.focus">Foco</span></button>
+        <button type="button" class="tab" data-view="data"><svg class="icon" aria-hidden="true"><use href="#i-database"/></svg><span data-i18n="nav.data">Dados</span></button>
+      </nav>
+
+      <div class="header-controls">
+        <div class="seg" id="langToggle" role="group" data-i18n-aria="header.lang" aria-label="Idioma">
+          <button type="button" data-lang="pt" aria-pressed="true">PT</button>
+          <button type="button" data-lang="en" aria-pressed="false">EN</button>
+        </div>
+        <button type="button" class="btn btn-icon" id="themeToggle" data-i18n-aria="header.theme" aria-label="Alternar tema" aria-pressed="false"><svg class="icon" aria-hidden="true"><use href="#i-moon"/></svg></button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main" class="container" tabindex="-1">
+    <h1 class="sr-only" data-i18n="a11y.title">Scriba — Gestão de Estudos</h1>
+
+    <!-- ====================== DASHBOARD ====================== -->
+    <section id="view-dashboard" class="view" aria-labelledby="h-dashboard">
+      <div class="view-head">
+        <div>
+          <p class="eyebrow" id="greeting">Olá</p>
+          <h2 id="h-dashboard" tabindex="-1" data-i18n="dash.title">Painel</h2>
+          <p class="muted" id="dashDate"></p>
+          <p class="streak" id="streak" hidden></p>
+        </div>
+        <div class="quick-actions">
+          <button type="button" class="btn btn-accent" data-action="goto" data-target="tasks" data-field="taskTitle"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg><span data-i18n="quick.task">Nova tarefa</span></button>
+          <button type="button" class="btn" data-action="goto" data-target="planner" data-field="sessionSubject"><svg class="icon" aria-hidden="true"><use href="#i-calendar"/></svg><span data-i18n="quick.session">Planejar estudo</span></button>
+          <button type="button" class="btn btn-primary" data-action="goto" data-target="focus"><svg class="icon" aria-hidden="true"><use href="#i-play"/></svg><span data-i18n="quick.focus">Iniciar foco</span></button>
+        </div>
+      </div>
+
+      <!-- First-run welcome (shown only while there is no data at all) -->
+      <article class="card welcome" id="welcomeCard" hidden>
+        <div class="welcome-intro">
+          <h3 data-i18n="welcome.title">Bem-vindo ao Scriba</h3>
+          <p data-i18n="welcome.text">Organize aulas e tarefas, planeje blocos de estudo e foque com o Pomodoro — tudo salvo no seu navegador.</p>
+          <div class="form-actions">
+            <button type="button" class="btn btn-primary" data-action="goto" data-target="tasks" data-field="taskTitle"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg><span data-i18n="welcome.start">Começar do zero</span></button>
+            <button type="button" class="btn btn-accent" data-action="load-sample"><svg class="icon" aria-hidden="true"><use href="#i-sparkles"/></svg><span data-i18n="welcome.sample">Ver com exemplos</span></button>
+          </div>
+        </div>
+        <ol class="steps">
+          <li class="step"><span class="step-num">1</span><div><strong data-i18n="welcome.s1t">Cadastre</strong><p data-i18n="welcome.s1d">Aulas, provas e tarefas no Cronograma.</p></div></li>
+          <li class="step"><span class="step-num">2</span><div><strong data-i18n="welcome.s2t">Planeje</strong><p data-i18n="welcome.s2d">Reserve blocos de estudo e defina metas.</p></div></li>
+          <li class="step"><span class="step-num">3</span><div><strong data-i18n="welcome.s3t">Foque</strong><p data-i18n="welcome.s3d">Use o Pomodoro e acompanhe seu progresso.</p></div></li>
+        </ol>
+      </article>
+
+      <article class="card nextup" id="nextUp" aria-live="polite" hidden></article>
+
+      <div class="metrics">
+        <article class="card metric metric-strong">
+          <svg class="icon metric-icon" aria-hidden="true"><use href="#i-tasks"/></svg>
+          <p class="metric-label" data-i18n="dash.pending">Tarefas pendentes</p>
+          <p class="metric-value" id="mPending">0</p>
+          <p class="metric-hint" id="mPendingHint">&nbsp;</p>
+        </article>
+        <article class="card metric">
+          <svg class="icon metric-icon" aria-hidden="true"><use href="#i-clock"/></svg>
+          <p class="metric-label" data-i18n="dash.hours">Horas estudadas</p>
+          <p class="metric-value" id="mHours">0min</p>
+          <p class="metric-hint" data-i18n="dash.hoursHint">foco + blocos concluídos</p>
+        </article>
+        <article class="card metric metric-soft">
+          <svg class="icon metric-icon" aria-hidden="true"><use href="#i-target"/></svg>
+          <p class="metric-label" data-i18n="dash.goals">Metas concluídas</p>
+          <p class="metric-value" id="mGoals">0/0</p>
+          <p class="metric-hint">&nbsp;</p>
+        </article>
+        <article class="card metric">
+          <svg class="icon metric-icon" aria-hidden="true"><use href="#i-timer"/></svg>
+          <p class="metric-label" data-i18n="dash.pomos">Pomodoros hoje</p>
+          <p class="metric-value" id="mPomos">0</p>
+          <p class="metric-hint" id="mPomosHint">&nbsp;</p>
+        </article>
+      </div>
+
+      <div class="grid-2">
+        <article class="card">
+          <h3 id="h-progress"><svg class="icon" aria-hidden="true"><use href="#i-layers"/></svg><span data-i18n="dash.progress">Progresso geral</span></h3>
+          <div class="progress-row">
+            <div class="progress" id="progressBar" role="progressbar" aria-labelledby="h-progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+              <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <span class="pct" id="progressPct">0%</span>
+          </div>
+          <p class="muted" id="progressText"></p>
+          <div class="breakdown" id="progressBreakdown"></div>
+        </article>
+
+        <article class="card">
+          <h3><svg class="icon" aria-hidden="true"><use href="#i-sunrise"/></svg><span data-i18n="dash.todayTitle">Hoje</span></h3>
+          <div id="todayList"></div>
+        </article>
+
+        <article class="card">
+          <h3><svg class="icon" aria-hidden="true"><use href="#i-calendar"/></svg><span data-i18n="dash.weekTitle">Próximos 7 dias</span></h3>
+          <div class="week" id="weekStrip"></div>
+        </article>
+
+        <article class="card">
+          <h3><svg class="icon" aria-hidden="true"><use href="#i-clock"/></svg><span data-i18n="dash.lastTitle">Últimos 7 dias</span></h3>
+          <div class="bars" id="studyBars"></div>
+          <p class="muted bars-total" id="studyBarsTotal"></p>
+        </article>
+      </div>
+    </section>
+
+    <!-- ====================== SCHEDULE & TASKS ====================== -->
+    <section id="view-tasks" class="view" aria-labelledby="h-tasks" hidden>
+      <div class="view-head">
+        <div>
+          <p class="eyebrow" data-i18n="nav.tasks">Cronograma</p>
+          <h2 id="h-tasks" tabindex="-1" data-i18n="tasks.title">Cronograma e Tarefas</h2>
+          <p class="muted" data-i18n="tasks.subtitle">Aulas, provas e tarefas organizadas por dia.</p>
+        </div>
+      </div>
+
+      <div class="layout-side">
+        <form id="taskForm" class="card form-card" autocomplete="off" data-add-title="tasks.formAdd" data-edit-title="tasks.formEdit">
+          <h3 class="form-title" data-i18n="tasks.formAdd">Novo item</h3>
+          <input type="hidden" name="id">
+          <div class="form-grid">
+            <div class="field span-2">
+              <label for="taskTitle" data-i18n="f.title">Título</label>
+              <input id="taskTitle" name="title" type="text" required maxlength="120" data-autofocus data-i18n-placeholder="tasks.titlePh" placeholder="Ex.: Resolver lista de cálculo">
+            </div>
+            <div class="field">
+              <label for="taskSubject" data-i18n="f.subject">Disciplina / matéria</label>
+              <input id="taskSubject" name="subject" type="text" list="subjectList" maxlength="60" data-i18n-placeholder="f.subjectPh" placeholder="Ex.: Matemática">
+            </div>
+            <div class="field">
+              <label for="taskKind" data-i18n="f.kind">Tipo</label>
+              <select id="taskKind" name="kind">
+                <option value="task" data-i18n="kind.task">Tarefa</option>
+                <option value="class" data-i18n="kind.class">Aula</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="taskDate" data-i18n="f.date">Data</label>
+              <input id="taskDate" name="date" type="date">
+            </div>
+            <div class="field">
+              <label for="taskTime" data-i18n="f.time">Horário</label>
+              <input id="taskTime" name="time" type="time">
+            </div>
+            <div class="chips span-2" role="group" data-i18n-aria="date.shortcuts" aria-label="Atalhos de data">
+              <button type="button" class="chip" data-action="set-date" data-target="taskDate" data-offset="0" data-i18n="date.today">Hoje</button>
+              <button type="button" class="chip" data-action="set-date" data-target="taskDate" data-offset="1" data-i18n="date.tomorrow">Amanhã</button>
+              <button type="button" class="chip" data-action="set-date" data-target="taskDate" data-offset="7" data-i18n="date.nextWeek">Em 1 semana</button>
+              <button type="button" class="chip" data-action="set-date" data-target="taskDate" data-offset="" data-i18n="date.clear">Sem data</button>
+            </div>
+            <div class="field span-2">
+              <label for="taskPriority" data-i18n="f.priority">Prioridade</label>
+              <select id="taskPriority" name="priority">
+                <option value="high" data-i18n="prio.high">Alta</option>
+                <option value="medium" selected data-i18n="prio.medium">Média</option>
+                <option value="low" data-i18n="prio.low">Baixa</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary form-submit"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg><span data-i18n="common.add">Adicionar</span></button>
+            <button type="button" class="btn form-cancel" hidden><span data-i18n="common.cancel">Cancelar</span></button>
+          </div>
+        </form>
+
+        <article class="card">
+          <div class="card-head">
+            <h3><span data-i18n="tasks.listTitle">Seus itens</span> <span class="badge" id="taskCount">0</span></h3>
+            <button type="button" class="btn btn-sm" id="clearDone" data-action="clear-done" hidden><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="tasks.clearDone">Limpar concluídos</span></button>
+          </div>
+
+          <div class="filters">
+            <div class="field search-field">
+              <label for="filterSearch" class="sr-only" data-i18n="flt.search">Buscar</label>
+              <svg class="icon search-icon" aria-hidden="true"><use href="#i-search"/></svg>
+              <input id="filterSearch" type="search" data-i18n-placeholder="flt.searchPh" placeholder="Buscar por título ou matéria…">
+            </div>
+            <div class="filter-row">
+              <div class="seg" id="filterStatus" role="group" data-i18n-aria="flt.status" aria-label="Status">
+                <button type="button" data-filter="status" data-value="all" aria-pressed="true"><span data-i18n="status.all">Todos</span> <span class="seg-count" data-count="all"></span></button>
+                <button type="button" data-filter="status" data-value="pending" aria-pressed="false"><span data-i18n="status.pending">Pendentes</span> <span class="seg-count" data-count="pending"></span></button>
+                <button type="button" data-filter="status" data-value="done" aria-pressed="false"><span data-i18n="status.done">Concluídos</span> <span class="seg-count" data-count="done"></span></button>
+              </div>
+              <div class="seg" id="filterKind" role="group" data-i18n-aria="flt.kind" aria-label="Tipo">
+                <button type="button" data-filter="kind" data-value="all" aria-pressed="true" data-i18n="kind.all">Todos</button>
+                <button type="button" data-filter="kind" data-value="task" aria-pressed="false" data-i18n="kind.tasks">Tarefas</button>
+                <button type="button" data-filter="kind" data-value="class" aria-pressed="false" data-i18n="kind.classes">Aulas</button>
+              </div>
+            </div>
+          </div>
+
+          <div id="taskList"></div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ====================== PLANNER ====================== -->
+    <section id="view-planner" class="view" aria-labelledby="h-planner" hidden>
+      <div class="view-head">
+        <div>
+          <p class="eyebrow" data-i18n="nav.planner">Planejador</p>
+          <h2 id="h-planner" tabindex="-1" data-i18n="plan.title">Planejador de Estudos</h2>
+          <p class="muted" data-i18n="plan.subtitle">Reserve horários para estudar e acompanhe suas metas.</p>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <!-- Time blocks -->
+        <div class="stack">
+          <form id="sessionForm" class="card form-card" autocomplete="off" data-add-title="plan.sessionAdd" data-edit-title="plan.sessionEdit">
+            <h3 class="form-title" data-i18n="plan.sessionAdd">Novo bloco de estudo</h3>
+            <input type="hidden" name="id">
+            <div class="form-grid">
+              <div class="field">
+                <label for="sessionSubject" data-i18n="f.subject">Disciplina / matéria</label>
+                <input id="sessionSubject" name="subject" type="text" list="subjectList" required maxlength="60" data-autofocus data-i18n-placeholder="f.subjectPh" placeholder="Ex.: Matemática">
+              </div>
+              <div class="field">
+                <label for="sessionTopic" data-i18n="f.topic">Assunto / objetivo</label>
+                <input id="sessionTopic" name="topic" type="text" maxlength="120" data-i18n-placeholder="plan.topicPh" placeholder="Ex.: Capítulo 3 — Derivadas">
+              </div>
+              <div class="field span-2">
+                <label for="sessionDate" data-i18n="f.date">Data</label>
+                <input id="sessionDate" name="date" type="date" required>
+              </div>
+              <div class="chips span-2" role="group" data-i18n-aria="date.shortcuts" aria-label="Atalhos de data">
+                <button type="button" class="chip" data-action="set-date" data-target="sessionDate" data-offset="0" data-i18n="date.today">Hoje</button>
+                <button type="button" class="chip" data-action="set-date" data-target="sessionDate" data-offset="1" data-i18n="date.tomorrow">Amanhã</button>
+                <button type="button" class="chip" data-action="set-date" data-target="sessionDate" data-offset="2" data-i18n="date.in2days">Em 2 dias</button>
+              </div>
+              <div class="field">
+                <label for="sessionStart" data-i18n="f.start">Início</label>
+                <input id="sessionStart" name="start" type="time" required>
+              </div>
+              <div class="field">
+                <label for="sessionEnd" data-i18n="f.end">Fim</label>
+                <input id="sessionEnd" name="end" type="time" required>
+              </div>
+              <p class="hint span-2" id="sessionDuration" aria-live="polite"></p>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary form-submit"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg><span data-i18n="common.add">Adicionar</span></button>
+              <button type="button" class="btn form-cancel" hidden><span data-i18n="common.cancel">Cancelar</span></button>
+            </div>
+          </form>
+
+          <article class="card">
+            <div class="card-head">
+              <h3 data-i18n="plan.sessionsTitle">Blocos de estudo</h3>
+              <span class="badge" id="sessionSummary" hidden></span>
+            </div>
+            <div id="sessionList"></div>
+          </article>
+        </div>
+
+        <!-- Goals -->
+        <div class="stack">
+          <form id="goalForm" class="card form-card" autocomplete="off" data-add-title="plan.goalAdd" data-edit-title="plan.goalEdit">
+            <h3 class="form-title" data-i18n="plan.goalAdd">Nova meta</h3>
+            <input type="hidden" name="id">
+            <div class="form-grid">
+              <div class="field span-2">
+                <label for="goalTitle" data-i18n="f.goal">Meta</label>
+                <input id="goalTitle" name="title" type="text" required maxlength="120" data-autofocus data-i18n-placeholder="plan.goalPh" placeholder="Ex.: Revisar toda a matéria de Física">
+              </div>
+              <div class="field">
+                <label for="goalTarget" data-i18n="f.target">Meta (horas)</label>
+                <input id="goalTarget" name="targetHours" type="number" required min="0.5" max="1000" step="0.5" inputmode="decimal">
+              </div>
+              <div class="field">
+                <label for="goalDeadline" data-i18n="f.deadline">Prazo (opcional)</label>
+                <input id="goalDeadline" name="deadline" type="date">
+              </div>
+              <div class="chips span-2" role="group" data-i18n-aria="date.shortcuts" aria-label="Atalhos de data">
+                <button type="button" class="chip" data-action="set-date" data-target="goalDeadline" data-offset="7" data-i18n="date.nextWeek">Em 1 semana</button>
+                <button type="button" class="chip" data-action="set-date" data-target="goalDeadline" data-offset="30" data-i18n="date.nextMonth">Em 1 mês</button>
+                <button type="button" class="chip" data-action="set-date" data-target="goalDeadline" data-offset="" data-i18n="date.clear">Sem data</button>
+              </div>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary form-submit"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg><span data-i18n="common.add">Adicionar</span></button>
+              <button type="button" class="btn form-cancel" hidden><span data-i18n="common.cancel">Cancelar</span></button>
+            </div>
+          </form>
+
+          <article class="card">
+            <div class="card-head">
+              <h3 data-i18n="plan.goalsTitle">Metas</h3>
+            </div>
+            <div id="goalList"></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================== POMODORO FOCUS ====================== -->
+    <section id="view-focus" class="view" aria-labelledby="h-focus" hidden>
+      <div class="view-head">
+        <div>
+          <p class="eyebrow" data-i18n="nav.focus">Foco</p>
+          <h2 id="h-focus" tabindex="-1" data-i18n="focus.title">Foco Pomodoro</h2>
+          <p class="muted" data-i18n="focus.subtitle">Ciclos de foco e pausa para estudar sem se esgotar.</p>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <article class="card timer" id="timerCard" data-mode="work">
+          <button type="button" class="btn btn-square btn-sm zen-btn" id="zenToggle" aria-pressed="false" data-i18n-aria="focus.zen" aria-label="Modo tela cheia" title="Z"><svg class="icon" aria-hidden="true"><use href="#i-zoom"/></svg></button>
+          <div class="seg" role="group" data-i18n-aria="focus.modes" aria-label="Modo do timer" id="modeTabs">
+            <button type="button" data-mode="work" aria-pressed="true" data-i18n="mode.work">Foco</button>
+            <button type="button" data-mode="short" aria-pressed="false" data-i18n="mode.short">Pausa curta</button>
+            <button type="button" data-mode="long" aria-pressed="false" data-i18n="mode.long">Pausa longa</button>
+          </div>
+
+          <div class="ring">
+            <svg viewBox="0 0 200 200" aria-hidden="true" focusable="false">
+              <circle class="ring-outline" cx="100" cy="100" r="88"/>
+              <circle class="ring-track" cx="100" cy="100" r="88"/>
+              <circle class="ring-fill" id="ringFill" cx="100" cy="100" r="88"/>
+            </svg>
+            <div class="ring-center">
+              <p class="timer-display" id="timerDisplay" role="timer" aria-live="off">25:00</p>
+              <p class="timer-phase" id="timerPhase"></p>
+            </div>
+          </div>
+
+          <div class="cycle-dots" id="cycleDots" role="img" aria-label=""></div>
+
+          <div class="field">
+            <label for="focusSubject" data-i18n="focus.subject">Estudando</label>
+            <input id="focusSubject" type="text" list="subjectList" maxlength="60" data-i18n-placeholder="focus.subjectPh" placeholder="O que você vai estudar?">
+          </div>
+
+          <div class="timer-actions">
+            <button type="button" class="btn btn-ink btn-lg" id="timerToggle"><svg class="icon" aria-hidden="true"><use id="timerToggleIcon" href="#i-play"/></svg><span id="timerToggleLabel"></span></button>
+            <button type="button" class="btn" id="timerReset"><svg class="icon" aria-hidden="true"><use href="#i-reset"/></svg><span data-i18n="focus.reset">Reiniciar</span></button>
+            <button type="button" class="btn" id="timerSkip"><svg class="icon" aria-hidden="true"><use href="#i-skip"/></svg><span data-i18n="focus.skip">Pular</span></button>
+          </div>
+          <p class="hint timer-hint"><kbd data-i18n="key.space">Espaço</kbd> <span data-i18n="focus.shortcut">inicia ou pausa</span></p>
+        </article>
+
+        <div class="stack">
+          <form id="pomoForm" class="card" autocomplete="off">
+            <h3><svg class="icon" aria-hidden="true"><use href="#i-zap"/></svg><span data-i18n="focus.settings">Configurações</span></h3>
+
+            <div class="chips" role="group" data-i18n-aria="set.presets" aria-label="Predefinições">
+              <button type="button" class="chip" data-action="pomo-preset" data-preset="classic" data-i18n="set.presetClassic">Clássico 25/5/15</button>
+              <button type="button" class="chip" data-action="pomo-preset" data-preset="deep" data-i18n="set.presetDeep">Profundo 50/10/30</button>
+            </div>
+
+            <div class="form-grid">
+              <div class="field">
+                <label for="pomoWork" data-i18n="set.work">Foco (min)</label>
+                <input id="pomoWork" name="work" type="number" min="1" max="180" inputmode="numeric">
+              </div>
+              <div class="field">
+                <label for="pomoShort" data-i18n="set.short">Pausa curta (min)</label>
+                <input id="pomoShort" name="short" type="number" min="1" max="60" inputmode="numeric">
+              </div>
+              <div class="field">
+                <label for="pomoLong" data-i18n="set.long">Pausa longa (min)</label>
+                <input id="pomoLong" name="long" type="number" min="1" max="90" inputmode="numeric">
+              </div>
+              <div class="field">
+                <label for="pomoCycles" data-i18n="set.cycles">Ciclos até a pausa longa</label>
+                <input id="pomoCycles" name="cycles" type="number" min="2" max="8" inputmode="numeric">
+              </div>
+            </div>
+
+            <div class="switches">
+              <label class="switch"><input type="checkbox" name="sound"><span class="switch-box" aria-hidden="true"></span><span data-i18n="set.sound">Som ao terminar</span></label>
+              <label class="switch"><input type="checkbox" name="auto"><span class="switch-box" aria-hidden="true"></span><span data-i18n="set.auto">Iniciar a próxima fase automaticamente</span></label>
+            </div>
+          </form>
+
+          <article class="card">
+            <div class="card-head">
+              <h3 data-i18n="focus.logTitle">Foco de hoje</h3>
+              <span class="badge" id="focusSummary"></span>
+            </div>
+            <div id="focusLogList"></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================== DATA & BACKUP ====================== -->
+    <section id="view-data" class="view" aria-labelledby="h-data" hidden>
+      <div class="view-head">
+        <div>
+          <p class="eyebrow" data-i18n="nav.data">Dados</p>
+          <h2 id="h-data" tabindex="-1" data-i18n="data.title">Dados e Backup</h2>
+          <p class="muted" data-i18n="data.subtitle">Seus dados ficam só neste navegador. Faça backups com frequência.</p>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <article class="card">
+          <h3><svg class="icon" aria-hidden="true"><use href="#i-database"/></svg><span data-i18n="data.backupTitle">Backup</span></h3>
+          <p data-i18n="data.intro">Tudo é salvo automaticamente neste navegador (localStorage). Exporte um arquivo JSON para guardar seu progresso ou levar seus dados para outro dispositivo.</p>
+          <div class="form-actions">
+            <button type="button" class="btn btn-accent" id="exportBtn"><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg><span data-i18n="data.export">Exportar JSON</span></button>
+            <button type="button" class="btn btn-primary" id="importBtn"><svg class="icon" aria-hidden="true"><use href="#i-upload"/></svg><span data-i18n="data.import">Importar JSON</span></button>
+            <input type="file" id="importFile" accept="application/json,.json" hidden>
+          </div>
+        </article>
+
+        <article class="card">
+          <h3><svg class="icon" aria-hidden="true"><use href="#i-layers"/></svg><span data-i18n="data.stats">Resumo dos dados</span></h3>
+          <ul class="stat-list">
+            <li class="stat"><span data-i18n="data.tasks">Itens do cronograma</span><strong id="statTasks">0</strong></li>
+            <li class="stat"><span data-i18n="data.sessions">Blocos de estudo</span><strong id="statSessions">0</strong></li>
+            <li class="stat"><span data-i18n="data.goals">Metas</span><strong id="statGoals">0</strong></li>
+            <li class="stat"><span data-i18n="data.focus">Registros de foco</span><strong id="statFocus">0</strong></li>
+            <li class="stat"><span data-i18n="data.lastBackup">Último backup</span><strong id="statBackup">—</strong></li>
+            <li class="stat"><span data-i18n="data.size">Tamanho salvo</span><strong id="statSize">0 KB</strong></li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <h3><svg class="icon" aria-hidden="true"><use href="#i-sparkles"/></svg><span data-i18n="data.sampleTitle">Dados de exemplo</span></h3>
+          <p data-i18n="data.sampleText">Quer ver o Scriba em ação? Adicione alguns itens de exemplo — você pode excluí-los depois.</p>
+          <div class="form-actions">
+            <button type="button" class="btn" data-action="load-sample"><svg class="icon" aria-hidden="true"><use href="#i-sparkles"/></svg><span data-i18n="data.sampleBtn">Adicionar exemplos</span></button>
+          </div>
+        </article>
+
+        <article class="card card-danger">
+          <h3><svg class="icon" aria-hidden="true"><use href="#i-trash"/></svg><span data-i18n="data.danger">Zona de perigo</span></h3>
+          <p data-i18n="data.dangerText">Apaga todos os itens, blocos, metas e registros de foco deste navegador. Faça um backup antes.</p>
+          <div class="form-actions">
+            <button type="button" class="btn btn-danger" id="resetBtn"><span data-i18n="data.reset">Apagar todos os dados</span></button>
+          </div>
+        </article>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <span class="brand-badge brand-badge-sm">SCRIBA</span>
+      <span data-i18n="footer.text">Feito para estudar com foco. Seus dados nunca saem do seu navegador.</span>
+      <button type="button" class="link-btn" id="installBtn" data-action="install" hidden><span data-i18n="pwa.install">Instalar app</span></button>
+      <button type="button" class="link-btn" data-action="help"><kbd>?</kbd> <span data-i18n="help.open">Atalhos</span></button>
+    </div>
+  </footer>
+
+  <!-- Shared widgets -->
+  <datalist id="subjectList"></datalist>
+  <div class="toasts" id="toasts" aria-live="polite"></div>
+
+  <dialog id="confirmDialog" aria-labelledby="confirmTitle">
+    <form method="dialog">
+      <h3 id="confirmTitle" data-i18n="confirm.title">Tem certeza?</h3>
+      <p id="confirmMessage"></p>
+      <div class="dialog-actions">
+        <button type="submit" value="cancel" class="btn" data-i18n="common.cancel">Cancelar</button>
+        <button type="submit" value="confirm" class="btn btn-danger" data-i18n="common.confirm">Confirmar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="helpDialog" aria-labelledby="helpTitle">
+    <form method="dialog">
+      <h3 id="helpTitle" data-i18n="help.title">Atalhos do teclado</h3>
+      <dl class="keys">
+        <div><dt><kbd>1</kbd>–<kbd>5</kbd></dt><dd data-i18n="help.views">Trocar de aba</dd></div>
+        <div><dt><kbd>N</kbd></dt><dd data-i18n="help.new">Nova tarefa</dd></div>
+        <div><dt><kbd>/</kbd></dt><dd data-i18n="help.search">Buscar no cronograma</dd></div>
+        <div><dt><kbd>Espaço</kbd></dt><dd data-i18n="help.space">Iniciar / pausar o foco</dd></div>
+        <div><dt><kbd>Z</kbd></dt><dd data-i18n="help.zen">Modo tela cheia do timer</dd></div>
+        <div><dt><kbd>T</kbd></dt><dd data-i18n="help.theme">Alternar tema</dd></div>
+        <div><dt><kbd>?</kbd></dt><dd data-i18n="help.this">Abrir esta ajuda</dd></div>
+        <div><dt><kbd>Esc</kbd></dt><dd data-i18n="help.esc">Fechar / cancelar edição</dd></div>
+      </dl>
+      <div class="dialog-actions"><button type="submit" class="btn btn-primary" data-i18n="common.close">Fechar</button></div>
+    </form>
+  </dialog>
+
+  <noscript>
+    <p style="padding:1rem;font-family:sans-serif">Scriba precisa de JavaScript para funcionar.</p>
+  </noscript>
+</body>
+</html>
